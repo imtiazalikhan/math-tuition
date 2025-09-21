@@ -34,6 +34,22 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // 🧠 Simple validation function
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.grade.trim()) newErrors.grade = "Grade is required";
+    if (!form.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Phone must be a 10-digit number";
+    }
+    return newErrors;
+  };
+
   const toggleDrawer = (open) => {
     setDrawerOpen(open);
   };
@@ -42,29 +58,43 @@ function App() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear error on typing
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus("");
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
+      setSubmitting(true);
       const res = await fetch("http://localhost:5000/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const result = await res.json();
+
       if (result.status === "success") {
         setStatus("✅ Submitted successfully!");
         setForm({ name: "", grade: "", phone: "" });
+        setErrors({});
       } else {
         setStatus("❌ Something went wrong.");
       }
     } catch (err) {
-      setStatus("❌ Something went wrong.");
+      setStatus("❌ Server error. Try again later.");
       console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
-
   const benefits = [
     {
       title: "Boosts Confidence",
@@ -272,7 +302,12 @@ function App() {
                 component="img"
                 src="https://images.unsplash.com/photo-1581093458381-4f3f6b1b7f5d?auto=format&fit=crop&w=600&q=80"
                 alt="About us"
-                sx={{ width: "100%", borderRadius: 2 }}
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: 2,
+                  objectFit: "cover",
+                }}
               />
             </Grid>
           </Grid>
@@ -299,6 +334,8 @@ function App() {
                 onChange={handleChange}
                 required
                 variant="outlined"
+                error={!!errors.name}
+                helperText={errors.name}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -316,6 +353,8 @@ function App() {
                 onChange={handleChange}
                 required
                 variant="outlined"
+                error={!!errors.grade}
+                helperText={errors.grade}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -333,6 +372,8 @@ function App() {
                 onChange={handleChange}
                 required
                 variant="outlined"
+                error={!!errors.phone}
+                helperText={errors.phone}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -347,11 +388,15 @@ function App() {
                 variant="contained"
                 color="success"
                 sx={{ mt: 2 }}
+                disabled={submitting}
               >
-                Submit
+                {submitting ? "Submitting..." : "Submit"}
               </Button>
               {status && (
-                <Typography align="center" sx={{ mt: 2, color: "green" }}>
+                <Typography
+                  align="center"
+                  sx={{ mt: 2, color: status.includes("✅") ? "green" : "red" }}
+                >
                   {status}
                 </Typography>
               )}
