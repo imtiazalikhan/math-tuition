@@ -104,25 +104,25 @@ function App() {
     {
       title: "Boosts Confidence",
       desc: "Helps children gain self-confidence in mathematics through structured learning and positive reinforcement.",
-      img: "/Arhaan1.png",
+      img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80",
       highlight: "Build Strong Foundation",
     },
     {
       title: "Improved Performance",
       desc: "Regular practice and doubt clearing ensures better grades and deeper understanding of concepts.",
-      img: "/Ayman.png",
+      img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=400&q=80",
       highlight: "Track Progress",
     },
     {
       title: "Friendly Teaching",
       desc: "Our teachers simplify complex concepts with interactive sessions that make learning enjoyable.",
-      img: "/Aaquib.jpeg",
+      img: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
       highlight: "Interactive Sessions",
     },
     {
       title: "Structured Practice",
       desc: "We provide worksheets, quizzes, and consistent feedback to track progress and identify areas for improvement.",
-      img: "/umar.jpeg",
+      img: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80",
       highlight: "Personalized Learning",
     },
   ];
@@ -167,23 +167,24 @@ function App() {
               transition={{ duration: 0.5 }}
               style={{ flexGrow: 1 }}
             >
-              <Typography
-                variant="h6"
+              <Box
                 component="a"
                 href="#"
                 sx={{
-                  color: "#1a1a2e",
-                  fontWeight: 800,
-                  fontSize: { xs: "1.1rem", sm: "1.3rem" },
                   textDecoration: "none",
-                  background: "linear-gradient(135deg, #2e7d32, #4caf50)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                Math Tuitions
-              </Typography>
+                <img
+                  src="/logo.svg"
+                  alt="Math Tuitions"
+                  style={{
+                    height: "50px",
+                    width: "auto",
+                  }}
+                />
+              </Box>
             </motion.div>
 
             {isMobile ? (
@@ -279,19 +280,14 @@ function App() {
               borderBottom: "1px solid rgba(0,0,0,0.08)",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#1a1a2e",
-                fontWeight: 800,
-                background: "linear-gradient(135deg, #2e7d32, #4caf50)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
+            <img
+              src="/logo.svg"
+              alt="Math Tuitions"
+              style={{
+                height: "40px",
+                width: "auto",
               }}
-            >
-              Math Tuitions
-            </Typography>
+            />
             <IconButton
               onClick={() => toggleDrawer(false)}
               aria-label="Close navigation menu"
@@ -745,18 +741,17 @@ function App() {
         }}
       >
         <Container maxWidth="lg">
-          <Typography
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: "linear-gradient(90deg, #4caf50, #81c784)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            Math Tuitions
-          </Typography>
+          <Box sx={{ mb: 2 }}>
+            <img
+              src="/logo.svg"
+              alt="Math Tuitions"
+              style={{
+                height: "45px",
+                width: "auto",
+                filter: "brightness(1.1)",
+              }}
+            />
+          </Box>
           <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
             &copy; {new Date().getFullYear()} Math Tuitions for Kids. All rights
             reserved.
