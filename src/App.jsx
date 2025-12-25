@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AppBar,
   Toolbar,
@@ -10,418 +11,759 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemButton,
   Divider,
   useTheme,
   useMediaQuery,
-  Container,
-  TextField,
-  Grid,
   Card,
   CardContent,
   CardMedia,
-  InputAdornment,
+  Chip,
+  Container,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import PersonIcon from "@mui/icons-material/Person";
-import SchoolIcon from "@mui/icons-material/School";
-import PhoneIcon from "@mui/icons-material/Phone";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LetsConnect from "./LetsConnect";
+import ContactForm from "./ContactForm";
+import Aboutus from "./Aboutus";
+
+// Animation variants for Framer Motion
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+  hover: {
+    y: -8,
+    boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+    transition: { duration: 0.3 },
+  },
+};
+
+const navItemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.3 },
+  },
+};
 
 function App() {
-  const [form, setForm] = useState({ name: "", grade: "", phone: "" });
-  const [status, setStatus] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
-
-  // 🧠 Simple validation function
-  const validate = () => {
-    const newErrors = {};
-    if (!form.name.trim()) newErrors.name = "Name is required";
-    if (!form.grade.trim()) newErrors.grade = "Grade is required";
-    if (!form.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(form.phone)) {
-      newErrors.phone = "Phone must be a 10-digit number";
-    }
-    return newErrors;
-  };
-
-  const toggleDrawer = (open) => {
+  const toggleDrawer = useCallback((open) => {
     setDrawerOpen(open);
-  };
+  }, []);
 
-  const drawerItems = ["Why Us", "About", "Contact"];
+  const drawerItems = [
+    { label: "Why Us", href: "#whyus" },
+    { label: "About", href: "#about" },
+    { label: "Contact", href: "#contact" },
+  ];
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear error on typing
-  };
+  const handleNavClick = useCallback(
+    (href) => {
+      toggleDrawer(false);
+      // Small delay for drawer close animation
+      setTimeout(() => {
+        const element = document.querySelector(href);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    },
+    [toggleDrawer]
+  );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus("");
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      const res = await fetch(
-        "https://math-tuition-backend.vercel.app/api/contact",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
-
-      const result = await res.json();
-
-      if (result.status === "success") {
-        setStatus("✅ Submitted successfully!");
-        setForm({ name: "", grade: "", phone: "" });
-        setErrors({});
-      } else {
-        setStatus("❌ Something went wrong.");
-      }
-    } catch (err) {
-      setStatus("❌ Server error. Try again later.");
-      console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
-  };
   const benefits = [
     {
       title: "Boosts Confidence",
-      desc: "Helps children gain self-confidence in mathematics through structured learning.",
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+      desc: "Helps children gain self-confidence in mathematics through structured learning and positive reinforcement.",
+      img: "/Arhaan1.png",
+      highlight: "Build Strong Foundation",
     },
     {
       title: "Improved Performance",
-      desc: "Regular practice and doubt clearing ensures better grades and understanding.",
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+      desc: "Regular practice and doubt clearing ensures better grades and deeper understanding of concepts.",
+      img: "/Ayman.png",
+      highlight: "Track Progress",
     },
     {
       title: "Friendly Teaching",
-      desc: "Our teachers simplify concepts with interactive sessions.",
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+      desc: "Our teachers simplify complex concepts with interactive sessions that make learning enjoyable.",
+      img: "/Aaquib.jpeg",
+      highlight: "Interactive Sessions",
     },
     {
       title: "Structured Practice",
-      desc: "We provide worksheets, quizzes, and consistent feedback to track progress.",
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+      desc: "We provide worksheets, quizzes, and consistent feedback to track progress and identify areas for improvement.",
+      img: "/umar.jpeg",
+      highlight: "Personalized Learning",
     },
   ];
 
   const sectionHeadingSx = {
-    color: "#333",
-    fontWeight: "bold",
-    mb: 4,
+    color: "#1a1a2e",
+    fontWeight: 700,
+    mb: 2,
+    position: "relative",
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      bottom: -8,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: 60,
+      height: 4,
+      borderRadius: 2,
+      background: "linear-gradient(90deg, #2e7d32, #4caf50)",
+    },
   };
 
   return (
-    <>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#fafafa" }}>
       {/* Header */}
       <AppBar
         position="sticky"
-        sx={{ background: "#f3f3f3", top: 0, zIndex: 1100 }}
+        elevation={0}
+        sx={{
+          background: "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(0,0,0,0.08)",
+          top: 0,
+          zIndex: 1100,
+        }}
       >
-        <Toolbar>
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
-          >
-            Math Tuitions
-          </Typography>
-          {isMobile ? (
-            <IconButton
-              edge="start"
-              onClick={() => toggleDrawer(true)}
-              sx={{ display: { xs: "block", sm: "none" } }}
+        <Container maxWidth="lg">
+          <Toolbar disableGutters sx={{ py: 0.5 }}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{ flexGrow: 1 }}
             >
-              <MenuIcon />
-            </IconButton>
-          ) : (
-            <Box sx={{ display: "flex", gap: 2 }}>
-              {drawerItems.map((item) => (
-                <Button
-                  key={item}
-                  href={`#${item.toLowerCase().replace(" ", "")}`}
+              <Typography
+                variant="h6"
+                component="a"
+                href="#"
+                sx={{
+                  color: "#1a1a2e",
+                  fontWeight: 800,
+                  fontSize: { xs: "1.1rem", sm: "1.3rem" },
+                  textDecoration: "none",
+                  background: "linear-gradient(135deg, #2e7d32, #4caf50)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Math Tuitions
+              </Typography>
+            </motion.div>
+
+            {isMobile ? (
+              <IconButton
+                edge="end"
+                onClick={() => toggleDrawer(true)}
+                aria-label="Open navigation menu"
+                sx={{
+                  color: "#1a1a2e",
+                  "&:hover": { bgcolor: "rgba(46,125,50,0.1)" },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                {drawerItems.map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial="hidden"
+                    animate="visible"
+                    variants={navItemVariants}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Button
+                      onClick={() => handleNavClick(item.href)}
+                      sx={{
+                        color: "#4a4a68",
+                        fontWeight: 600,
+                        px: 2,
+                        borderRadius: 2,
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          bgcolor: "rgba(46,125,50,0.08)",
+                          color: "#2e7d32",
+                        },
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  </motion.div>
+                ))}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  {item}
-                </Button>
-              ))}
-            </Box>
-          )}
-        </Toolbar>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleNavClick("#contact")}
+                    sx={{
+                      ml: 1,
+                      bgcolor: "#2e7d32",
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      px: 3,
+                      boxShadow: "0 4px 14px rgba(46,125,50,0.35)",
+                      "&:hover": {
+                        bgcolor: "#1b5e20",
+                        boxShadow: "0 6px 20px rgba(46,125,50,0.45)",
+                      },
+                    }}
+                  >
+                    Enroll Now
+                  </Button>
+                </motion.div>
+              </Box>
+            )}
+          </Toolbar>
+        </Container>
       </AppBar>
 
+      {/* Mobile Drawer */}
       <Drawer
-        anchor="left"
+        anchor="right"
         open={drawerOpen}
         onClose={() => toggleDrawer(false)}
         sx={{
           "& .MuiDrawer-paper": {
-            width: 250,
+            width: 280,
             boxSizing: "border-box",
+            bgcolor: "#fafafa",
           },
         }}
       >
-        <Box sx={{ width: 250 }} role="presentation">
+        <Box sx={{ width: 280 }} role="navigation" aria-label="Main navigation">
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               p: 2,
+              borderBottom: "1px solid rgba(0,0,0,0.08)",
             }}
           >
             <Typography
               variant="h6"
-              sx={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+              sx={{
+                color: "#1a1a2e",
+                fontWeight: 800,
+                background: "linear-gradient(135deg, #2e7d32, #4caf50)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
             >
               Math Tuitions
             </Typography>
-            <IconButton onClick={() => toggleDrawer(false)}>
+            <IconButton
+              onClick={() => toggleDrawer(false)}
+              aria-label="Close navigation menu"
+            >
               <CloseIcon />
             </IconButton>
           </Box>
-          <Divider />
-          <List>
-            {drawerItems.map((text) => (
-              <ListItem button key={text} onClick={() => toggleDrawer(false)}>
-                <ListItemText color="#333" primary={text} />
-              </ListItem>
-            ))}
+          <List sx={{ px: 1, py: 2 }}>
+            <AnimatePresence>
+              {drawerItems.map((item, index) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton
+                      onClick={() => handleNavClick(item.href)}
+                      sx={{
+                        borderRadius: 2,
+                        "&:hover": { bgcolor: "rgba(46,125,50,0.08)" },
+                      }}
+                    >
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontWeight: 600,
+                          color: "#4a4a68",
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            <Divider sx={{ my: 2 }} />
+            <ListItem disablePadding>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => handleNavClick("#contact")}
+                sx={{
+                  bgcolor: "#2e7d32",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  py: 1.5,
+                  "&:hover": { bgcolor: "#1b5e20" },
+                }}
+              >
+                Enroll Now
+              </Button>
+            </ListItem>
           </List>
         </Box>
       </Drawer>
 
-      {/* Main content sections */}
-      <Box sx={{ scrollBehavior: "smooth", pt: 0 }}>
-        {/* Banner */}
-        <Box
-          sx={{
+      {/* Hero Banner */}
+      <Box
+        component="section"
+        aria-label="Hero section"
+        sx={{
+          position: "relative",
+          overflow: "hidden",
+          minHeight: { xs: "70vh", md: "80vh" },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
             background:
               "url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80') center/cover",
-            color: "white",
-            textAlign: "center",
-            py: 10,
-            mb: 6,
-          }}
+            filter: "brightness(0.35)",
+          },
+        }}
+      >
+        <Container
+          maxWidth="md"
+          sx={{ position: "relative", zIndex: 1, textAlign: "center", py: 8 }}
         >
-          <Typography variant="h3" fontWeight="bold">
-            Building Confidence in Mathematics
-          </Typography>
-          <Typography variant="h6" sx={{ mt: 2 }}>
-            Helping kids overcome fear of math with fun learning!
-          </Typography>
-          <Button
-            variant="contained"
-            color="success"
-            href="#contact"
-            sx={{ mt: 4 }}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Enroll Now
-          </Button>
-        </Box>
+            <Chip
+              label="Trusted by 500+ Parents"
+              icon={<CheckCircleIcon />}
+              sx={{
+                mb: 3,
+                bgcolor: "rgba(255,255,255,0.15)",
+                color: "white",
+                fontWeight: 600,
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                "& .MuiChip-icon": { color: "#4caf50" },
+              }}
+            />
+          </motion.div>
 
-        {/* Why Us */}
-        <Box id="whyus" sx={{ mb: 6, scrollMarginTop: "70px" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            align="center"
-            sx={sectionHeadingSx}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Why Choose Us?
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: 3, // spacing between cards
-            }}
-          >
-            {benefits.map((benefit, index) => (
-              <Card
-                key={index}
+            <Typography
+              variant="h2"
+              component="h1"
+              sx={{
+                color: "white",
+                fontWeight: 800,
+                fontSize: { xs: "2.2rem", sm: "3rem", md: "3.5rem" },
+                lineHeight: 1.2,
+                mb: 3,
+                textShadow: "0 2px 20px rgba(0,0,0,0.3)",
+              }}
+            >
+              Building Confidence in{" "}
+              <Box
+                component="span"
                 sx={{
-                  width: { xs: "100%", sm: "48%" }, // full width on mobile, half on sm+
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 2,
-                  boxShadow: 3,
+                  background: "linear-gradient(90deg, #4caf50, #81c784)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={benefit.img}
-                  alt={benefit.title}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {benefit.title}
-                  </Typography>
-                  <Typography variant="body2">{benefit.desc}</Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
+                Mathematics
+              </Box>
+            </Typography>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                color: "rgba(255,255,255,0.9)",
+                mb: 4,
+                maxWidth: 600,
+                mx: "auto",
+                fontWeight: 400,
+                fontSize: { xs: "1rem", sm: "1.15rem" },
+              }}
+            >
+              Helping kids overcome fear of math with fun, interactive learning
+              experiences tailored to their unique needs.
+            </Typography>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => handleNavClick("#contact")}
+                sx={{
+                  bgcolor: "#2e7d32",
+                  color: "white",
+                  fontWeight: 700,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 3,
+                  fontSize: "1rem",
+                  boxShadow: "0 8px 30px rgba(46,125,50,0.4)",
+                  "&:hover": {
+                    bgcolor: "#1b5e20",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 12px 40px rgba(46,125,50,0.5)",
+                  },
+                  transition: "all 0.3s ease",
+                }}
+              >
+                Start Learning Today
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => handleNavClick("#whyus")}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255,255,255,0.5)",
+                  fontWeight: 600,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 3,
+                  fontSize: "1rem",
+                  backdropFilter: "blur(10px)",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.1)",
+                    borderColor: "white",
+                  },
+                }}
+              >
+                Learn More
+              </Button>
+            </Box>
+          </motion.div>
+        </Container>
+
+        {/* Decorative gradient overlay at bottom */}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 150,
+            background: "linear-gradient(to top, #fafafa, transparent)",
+            pointerEvents: "none",
+          }}
+        />
+      </Box>
+
+      {/* Main content sections */}
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+        {/* Why Us */}
+        <Box
+          component="section"
+          id="whyus"
+          aria-labelledby="whyus-heading"
+          sx={{ mb: { xs: 8, md: 12 }, scrollMarginTop: "100px" }}
+        >
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+          >
+            <Typography
+              id="whyus-heading"
+              variant="h3"
+              component="h2"
+              gutterBottom
+              align="center"
+              sx={{
+                ...sectionHeadingSx,
+                mb: 6,
+              }}
+            >
+              Why Choose Us?
+            </Typography>
+          </motion.div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: { xs: "wrap", md: "nowrap" },
+                gap: 3,
+                justifyContent: "center",
+                mt: 6,
+              }}
+            >
+              {benefits.map((benefit, index) => (
+                <motion.div
+                  key={index}
+                  variants={cardVariants}
+                  whileHover="hover"
+                  style={{ flex: "1 1 0", minWidth: 220 }}
+                >
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      borderRadius: 4,
+                      border: "1px solid rgba(0,0,0,0.06)",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                      overflow: "hidden",
+                      bgcolor: "#fff",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        boxShadow: "0 12px 40px rgba(46,125,50,0.15)",
+                        borderColor: "rgba(46,125,50,0.2)",
+                      },
+                    }}
+                  >
+                    {/* Image at top */}
+                    <Box
+                      sx={{
+                        position: "relative",
+                        pt: "100%",
+                        background:
+                          "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
+                        image={benefit.img}
+                        alt={`${benefit.title} - tutor portrait`}
+                        sx={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          width: "75%",
+                          height: "75%",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "4px solid white",
+                          boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                    </Box>
+
+                    <CardContent
+                      sx={{
+                        flexGrow: 1,
+                        textAlign: "center",
+                        p: 3,
+                      }}
+                    >
+                      <Chip
+                        label={benefit.highlight}
+                        size="small"
+                        sx={{
+                          mb: 1.5,
+                          bgcolor: "rgba(46,125,50,0.1)",
+                          color: "#2e7d32",
+                          fontWeight: 600,
+                          fontSize: "0.7rem",
+                        }}
+                      />
+                      <Typography
+                        variant="h6"
+                        component="h3"
+                        gutterBottom
+                        sx={{
+                          fontWeight: 700,
+                          color: "#1a1a2e",
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        {benefit.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#6b6b8d",
+                          lineHeight: 1.6,
+                          fontSize: "0.875rem",
+                        }}
+                      >
+                        {benefit.desc}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
         </Box>
 
         {/* About Us */}
-        <Box id="about" sx={{ mb: 6, scrollMarginTop: "70px" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            align="center"
-            sx={sectionHeadingSx}
-          >
-            About Us
-          </Typography>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Typography sx={{ maxWidth: 500 }}>
-                Though we are new, we have strong experience in teaching
-                mathematics to kids. Our approach focuses on building
-                fundamentals, increasing confidence, and making math enjoyable.
-                Every child deserves to succeed in math, and we are here to
-                guide them!
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                src="https://images.unsplash.com/photo-1581093458381-4f3f6b1b7f5d?auto=format&fit=crop&w=600&q=80"
-                alt="About us"
-                sx={{
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: 2,
-                  objectFit: "cover",
-                }}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Contact Form */}
-        <Box id="contact" sx={{ mb: 6, scrollMarginTop: "70px" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            align="center"
-            sx={sectionHeadingSx}
-          >
-            Contact Us
-          </Typography>
-          <Card sx={{ maxWidth: 500, mx: "auto", p: 3, boxShadow: 6 }}>
-            <Box component="form" onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Parent Name"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                variant="outlined"
-                error={!!errors.name}
-                helperText={errors.name}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Child's Grade/Class"
-                name="grade"
-                value={form.grade}
-                onChange={handleChange}
-                required
-                variant="outlined"
-                error={!!errors.grade}
-                helperText={errors.grade}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SchoolIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Phone Number"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                variant="outlined"
-                error={!!errors.phone}
-                helperText={errors.phone}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PhoneIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="success"
-                sx={{ mt: 2 }}
-                disabled={submitting}
-              >
-                {submitting ? "Submitting..." : "Submit"}
-              </Button>
-              {status && (
-                <Typography
-                  align="center"
-                  sx={{ mt: 2, color: status.includes("✅") ? "green" : "red" }}
-                >
-                  {status}
-                </Typography>
-              )}
-            </Box>
-          </Card>
-        </Box>
-
-        {/* Footer */}
-        <Box
-          sx={{
-            textAlign: "center",
-            py: 3,
-            background: "#f3f3f3",
-            color: "#333",
-          }}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
         >
-          <Typography>
-            © 2025 Math Tuitions for Kids. All rights reserved.
-          </Typography>
+          <Aboutus sectionHeadingSx={sectionHeadingSx} />
+        </motion.div>
+
+        {/* Contact Section */}
+        <Box
+          component="section"
+          id="contact"
+          aria-labelledby="contact-heading"
+          sx={{ scrollMarginTop: "100px", pt: { xs: 4, md: 8 } }}
+        >
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                bgcolor: "#fff",
+                borderRadius: { xs: 3, md: 4 },
+                boxShadow: "0 4px 40px rgba(0,0,0,0.08)",
+                overflow: "hidden",
+                border: "1px solid rgba(0,0,0,0.06)",
+                minHeight: { sm: 500, md: 600 },
+              }}
+            >
+              {/* Left Column - Contact Info */}
+              <Box
+                sx={{
+                  flex: { xs: "none", sm: "0 0 38%", md: "0 0 40%" },
+                  background:
+                    "linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)",
+                  p: { xs: 3, sm: 3, md: 5 },
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <LetsConnect />
+              </Box>
+
+              {/* Right Column - Contact Form */}
+              <Box
+                sx={{
+                  flex: { xs: "none", sm: "1 1 62%", md: "1 1 60%" },
+                  p: { xs: 3, sm: 3, md: 5 },
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                <ContactForm />
+              </Box>
+            </Box>
+          </motion.div>
         </Box>
+      </Container>
+
+      {/* Footer */}
+      <Box
+        component="footer"
+        sx={{
+          textAlign: "center",
+          py: 4,
+          mt: 8,
+          background: "linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%)",
+          color: "rgba(255,255,255,0.8)",
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+              background: "linear-gradient(90deg, #4caf50, #81c784)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Math Tuitions
+          </Typography>
+          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
+            &copy; {new Date().getFullYear()} Math Tuitions for Kids. All rights
+            reserved.
+          </Typography>
+        </Container>
       </Box>
-    </>
+    </Box>
   );
 }
 
