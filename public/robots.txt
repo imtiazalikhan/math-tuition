@@ -1,0 +1,17 @@
+# robots.txt for Math Kidz - https://math-kidz.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://math-kidz.com/sitemap.xml
+
+# Crawl delay (optional - be nice to crawlers)
+Crawl-delay: 1
+
+# Block specific bots that don't respect robots.txt (optional)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10

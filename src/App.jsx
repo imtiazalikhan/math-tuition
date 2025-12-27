@@ -178,7 +178,7 @@ function App() {
               >
                 <img
                   src="/logo.svg"
-                  alt="Math Tuitions"
+                  alt="Math Kidz - Online Math Tuition and Tutorials for Kids"
                   style={{
                     height: "50px",
                     width: "auto",
@@ -282,7 +282,7 @@ function App() {
           >
             <img
               src="/logo.svg"
-              alt="Math Tuitions"
+              alt="Math Kidz - Online Math Tuition and Tutorials for Kids"
               style={{
                 height: "40px",
                 width: "auto",
@@ -599,7 +599,7 @@ function App() {
                       <CardMedia
                         component="img"
                         image={benefit.img}
-                        alt={`${benefit.title} - tutor portrait`}
+                        alt={`${benefit.title} - Math Tuition for Kids | Math Kidz`}
                         sx={{
                           position: "absolute",
                           top: "50%",
