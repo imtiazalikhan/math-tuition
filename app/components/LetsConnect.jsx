@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import { motion } from "framer-motion";
 import { Box, Typography, Stack, Link } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
@@ -65,7 +66,7 @@ export default function LetsConnect() {
           component="h2"
           sx={{
             fontWeight: 700,
-            color: "white",
+            color: "#fff",
             mb: { xs: 1.5, md: 2 },
             fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
           }}
