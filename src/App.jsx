@@ -27,6 +27,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LetsConnect from "./LetsConnect";
 import ContactForm from "./ContactForm";
 import Aboutus from "./Aboutus";
+import WhatsAppChat from "./WhatsAppChat";
 
 // Animation variants for Framer Motion
 const fadeInUp = {
@@ -758,6 +759,9 @@ function App() {
           </Typography>
         </Container>
       </Box>
+
+      {/* WhatsApp Chat Button */}
+      <WhatsAppChat />
     </Box>
   );
 }
